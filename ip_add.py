@@ -12,6 +12,8 @@ class mywindow(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.ui.pushButton.clicked.connect(self.add_checked_checkboxes_to_textedit)
+        self.ui.pushButton_2.clicked.connect(self.result)
+        self.count = 0
         
     def read_and_shuffle(self):
         filename = "./generated_ip_pairs.json"
@@ -42,26 +44,30 @@ class mywindow(QtWidgets.QMainWindow):
         self.ui.checkBox_5.setText(f'{enter_add[8]}')
         self.ui.checkBox_6.setText(f'{enter_add[9]}')
 
+    def are_networks_in_same_subnet(self, network1, network2):
+        network1 = ipaddress.IPv4Network(network1, strict=False)
+        network2 = ipaddress.IPv4Network(network2, strict=False)
+
+        return network1.overlaps(network2)
 
     def add_checked_checkboxes_to_textedit(self):
         
+        [checkbox.setDisabled(True) for checkbox in self.findChildren(QtWidgets.QCheckBox) if checkbox.isChecked()]
+        
         checked_items = [checkbox.text() for checkbox in self.findChildren(QtWidgets.QCheckBox) if checkbox.isChecked()]
+        
 
-        if len(checked_items) > 2:
-            QtWidgets.QMessageBox.warning(self.ui.centralwidget, "Предупреждение", "Выберите не более 2 чекбоксов.")
-            return
         # Получаем текст из отмеченных чекбоксов и добавляем в QTextEdit
         if checked_items:
-            new_add = {1: f'{checked_items[0]}',
-                       2: f'{checked_items[1]}'}
-            self.items.append(new_add)
-            self.ui.textEdit.clear()
-            for item in self.items:
-                for key, value in item.items():
-                    self.ui.textEdit.insertPlainText( f"{value}; ")
-        else:
-            self.ui.textEdit.append("Нет отмеченных чекбоксов")
-            
+            if self.are_networks_in_same_subnet(checked_items[0], checked_items[1]):
+                self.count += 1
+            else:
+                pass
+
+    
+    def result(self):
+        QtWidgets.QMessageBox.information(self.ui.centralwidget, "Результат", f"Ваша оценка {self.count}")
+        return
             
 
 if __name__ == '__main__':
