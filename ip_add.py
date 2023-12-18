@@ -1,5 +1,7 @@
 import ipaddress
+from importlib_resources import files
 import json
+import os
 from random import shuffle, choice
 import json
 import sys
@@ -7,9 +9,9 @@ from PyQt5 import QtWidgets, QtGui, QtCore
 from graph import Ui_MainWindow
 from info import Ui_Form
 
-
+ico = os.path.join(sys._MEIPASS, "icon.ico") if getattr(sys, 'frozen', False) else "icon.ico"
 app1 = QtWidgets.QApplication(sys.argv)
-app1.setWindowIcon(QtGui.QIcon('icon.ico'))
+app1.setWindowIcon(QtGui.QIcon(ico))
 
 class Information(QtWidgets.QMainWindow):
     def __init__(self):
@@ -31,7 +33,7 @@ class Mywindow(QtWidgets.QMainWindow):
         self.count = 0
         
     def read_and_shuffle(self):
-        filename = "./generated_ip_pairs.json"
+        filename = os.path.join(sys._MEIPASS, "generated_ip_pairs.json") if getattr(sys, 'frozen', False) else "generated_ip_pairs.json"
         enter_add = []
         
         with open(filename, 'r') as file:
